@@ -1,0 +1,38 @@
+<div>
+  <h1>Lista de productos en tiempo real</h1>
+  <ul id="productsContainer"></ul>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  let socket = io();
+
+  socket.on('productos', function (productos) {
+    let productsContainer = document.getElementById('productsContainer');
+    productsContainer.innerHTML = '';
+
+    productos.forEach(function (producto) {
+      let li = document.createElement('li');
+      li.textContent = producto;
+      productsContainer.appendChild(li);
+    });
+  });
+
+  // Escuchar el evento de envío de nuevo producto desde el formulario
+  let form = document.getElementById('productForm');
+  form.addEventListener('submit', function (event) {
+    event.preventDefault();
+    let producto = form.producto.value;
+    socket.emit('crearProducto', producto);
+    form.producto.value = '';
+  });
+
+  // Escuchar el evento de eliminación de producto al hacer clic en un elemento de la lista
+  let productsContainer = document.getElementById('productsContainer');
+  productsContainer.addEventListener('click', function (event) {
+    if (event.target.tagName === 'LI') {
+      let producto = event.target.textContent;
+      socket.emit('eliminarProducto', producto);
+    }
+  });
+</script>
