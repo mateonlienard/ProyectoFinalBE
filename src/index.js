@@ -4,6 +4,7 @@ const routes = require("./routes");
 const http = require('http').Server(app);
 const Io = require('socket.io')(http);
 const exphbs = require('express-handlebars');
+const fs = require('fs');
 
 
 class Server {
@@ -40,6 +41,12 @@ class Server {
     }
   
     listen(){
+      const productosData = fs.readFileSync('./src/productos.json');
+      const productos = JSON.parse(productosData);
+
+      this.app.get('/', (req, res) => {
+        res.render('index', { productos });
+      });
       this.app.listen(PORT, ()=> {console.log(`http://localhost:${PORT}`)});
     }
   }
