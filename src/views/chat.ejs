@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat websocket</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <script src="./socket.io/socket.io.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <style>
+        .button-39 {
+        background-color: #FFFFFF;
+        border: 1px solid rgb(209,213,219);
+        border-radius: .5rem;
+        box-sizing: border-box;
+        color: #111827;
+        font-family: "Inter var",ui-sans-serif,system-ui,-apple-system,system-ui,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+        font-size: .875rem;
+        font-weight: 600;
+        line-height: 1.25rem;
+        padding: .75rem 1rem;
+        text-align: center;
+        text-decoration: none #D1D5DB solid;
+        text-decoration-thickness: auto;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        cursor: pointer;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: manipulation;
+      }
+
+      .button-39:hover {
+        background-color: rgb(249,250,251);
+      }
+
+      .button-39:focus {
+        outline: 2px solid transparent;
+        outline-offset: 2px;
+      }
+
+      .button-39:focus-visible {
+        box-shadow: none;
+      }
+        .containerchat{
+        min-width: 300px;
+        background-color: #efefef;
+        min-height: 200px;
+      }
+    </style>
+</head>
+<body>
+    <div>
+        <h1>Chat con Socket.IO</h1>
+
+        <div id="container_chat">
+            <div>
+                <h3>Llena todos los campos</h3>
+                <input id="mensaje" type="email">
+               <button class="button-39" id="enviar">Enviar</button>
+            </div>
+            <div class="containerchat">
+                <p id="chat"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let socket = io()
+        let student = null;
+        swal({
+            title: 'Escribe tu nombre',
+            content: "input",
+            button: {
+                text: 'iniciar',
+                closeModal: true,
+            },
+        }).then(name=>{
+            if(!name) throw null;
+            student = name;
+            loadChat();
+        })
+        let mensaje = document.getElementById('mensaje');
+        let enviar = document.getElementById('enviar');
+
+        let chat_contenedor = document.getElementById('chat');
+
+        enviar.addEventListener('click', evt =>{
+            console.log(mensaje.value);
+            socket.emit('mensaje', {
+                student: student,
+                mensaje: mensaje.value
+            })
+
+            // socket.emit('addUser', student);
+        })
+
+        readSockets();
+
+        function loadChat(){
+            socket.on('init', data => {
+                loadData(data);
+            })
+        }
+
+        function readSockets(){
+            loadChat();
+            socket.on('nuevomensaje', data => {
+                loadData(data);
+            })
+        }
+
+        function loadData(data){
+            let innerHtml = ``;
+            data.forEach(msj => {
+                innerHtml += `<b>${msj.student}:</b> <span>${msj.mensaje}</span><br>`;
+            });
+            chat_contenedor.innerHTML= innerHtml;
+        }
+
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+</body>
+</html>
