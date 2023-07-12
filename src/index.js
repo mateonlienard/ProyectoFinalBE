@@ -1,5 +1,4 @@
 const express = require("express");
-const PORT = 8080;
 const routes = require("./routes");
 const http = require('http').Server(app);
 const Io = require('socket.io')(http);
@@ -8,8 +7,10 @@ const fs = require('fs');
 
 
 class Server {
-    constructor(){
+    constructor(port){
       this.app = express();
+      this.port = port;
+      this.server = http.createServer(this.app);
       this.settings();
       this.routes();
       this.io = Io();
@@ -69,7 +70,7 @@ class Server {
       this.app.get('/', (req, res) => {
         res.render('index', { productos });
       });
-      this.app.listen(PORT, ()=> {console.log(`http://localhost:${PORT}`)});
+      this.server.listen(this.PORT, ()=>{console.log(`http//localhost:${this.PORT}`);})
     }
   }
   
