@@ -51,8 +51,8 @@ class Server {
     
     views(){
       this.app.set('views', './views');
-      this.app.engine('handlebars', exphbs.engine());
-      this.app.set('view engine', 'handlebars');
+      app.set("view engine", "ejs");
+      app.set("views", path.join(__dirname, "views"));
     }
 
     public(){
